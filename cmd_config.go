@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"strings"
+
+	yaml "gopkg.in/yaml.v2"
 )
 
 var cmdConfig = &Command{
@@ -15,13 +18,35 @@ If config.yml exists, use it.
 }
 
 func runConfig(ctx context, args []string) error {
-
 	keyFile, dataFile, filteringCommand, unprotectiveCommands, err := configScan()
-	fmt.Println(keyFile)
-	fmt.Println(dataFile)
-	fmt.Println(filteringCommand)
-	fmt.Println(unprotectiveCommands)
-	fmt.Println(err)
+
+	initCfg := Config{
+		KeyFile:              keyFile,
+		DataFile:             dataFile,
+		FilteringCommand:     filteringCommand,
+		UnprotectiveCommands: unprotectiveCommands,
+	}
+	err = initCfg.configSave()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Save config to file on path.
+func (cfg Config) configSave() error {
+	path, err := app.ConfigFile("config.yml")
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	p, err := yaml.Marshal(cfg)
+	if err != nil {
+		return err
+	}
+	f.WriteString(string(p))
 	return nil
 }
 
