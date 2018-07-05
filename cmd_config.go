@@ -26,7 +26,12 @@ func runConfig(ctx context, args []string) error {
 		FilteringCommand:     filteringCommand,
 		UnprotectiveCommands: unprotectiveCommands,
 	}
-	err = initCfg.configSave()
+	path, err := app.ConfigFile("config.yml")
+	if err != nil {
+		return err
+	}
+
+	err = initCfg.configSave(path)
 	if err != nil {
 		return err
 	}
@@ -34,9 +39,8 @@ func runConfig(ctx context, args []string) error {
 	return nil
 }
 
-// Save config to file on path.
-func (cfg Config) configSave() error {
-	path, err := app.ConfigFile("config.yml")
+// Save config to file on given path.
+func (cfg Config) configSave(path string) error {
 	f, err := os.Create(path)
 	if err != nil {
 		return err
@@ -74,7 +78,12 @@ func configScan() (keyFile string, dataFile string, filteringCommand string, unp
 		return
 	}
 	if unprotectiveCommand != "" {
-		unprotectiveCommands = strings.Split(unprotectiveCommand, ",")
+		uc := strings.Split(unprotectiveCommand, ",")
+		for _, cmd := range uc {
+			if str := strings.TrimSpace(cmd); str != "" {
+				unprotectiveCommands = append(unprotectiveCommands, str)
+			}
+		}
 	}
 	fmt.Println()
 	return
