@@ -35,7 +35,7 @@ func runConfig(ctx context, args []string) error {
 	if err != nil {
 		return err
 	}
-
+	PrintSuccess(ctx.out, "config file saved as '%s' successfully", path)
 	return nil
 }
 
