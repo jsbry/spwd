@@ -1,25 +1,16 @@
 package main
 
 import (
+	"bytes"
 	"path/filepath"
 	"testing"
 )
 
-func TestConfigScan(t *testing.T) {
-	keyFile, dataFile, filteringCommand, unprotectiveCommands, err := configScan()
+func TestRunConfig(t *testing.T) {
+	out := &bytes.Buffer{}
+	ctx := newContext(out, "config")
+	err := cmdConfig.Run(ctx, []string{})
 	if err != nil {
-		t.Error(err)
-	}
-	if keyFile != "~/.ssh/id_rsa" {
-		t.Error(err)
-	}
-	if dataFile != "~/.local/share/spwd/data.dat" {
-		t.Error(err)
-	}
-	if filteringCommand != "peco" {
-		t.Error(err)
-	}
-	if len(unprotectiveCommands) != 0 {
 		t.Error(err)
 	}
 }
