@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"strings"
 
 	yaml "gopkg.in/yaml.v2"
@@ -18,6 +19,10 @@ If config.yml exists, use it.
 }
 
 func runConfig(ctx context, args []string) error {
+	err := configTemp()
+	if err != nil {
+		return err
+	}
 	keyFile, dataFile, filteringCommand, unprotectiveCommands, err := configScan()
 
 	initCfg := Config{
@@ -54,18 +59,50 @@ func (cfg Config) configSave(path string) error {
 	return nil
 }
 
+// Temp config file create
+func configTemp() error {
+	dir, err := app.ConfigDir()
+	if err != nil {
+		return err
+	}
+	err = os.MkdirAll(dir, os.ModePerm)
+	if err != nil {
+		return err
+	}
+
+	path, err := app.ConfigFile("config.yml")
+	if err != nil {
+		return err
+	}
+	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0755)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	return nil
+}
+
 func configScan() (keyFile string, dataFile string, filteringCommand string, unprotectiveCommands []string, err error) {
 	if keyFile, err = scanText("keyFile: "); err != nil {
 		return
 	}
 	if keyFile == "" {
-		keyFile = "~/.ssh/id_rsa"
+		if runtime.GOOS == "windows" {
+			keyFile = os.Getenv("USERPROFILE") + "\\.ssh\\id_rsa"
+		} else {
+			keyFile = "~/.ssh/id_rsa"
+		}
 	}
 	if dataFile, err = scanText("dataFile: "); err != nil {
 		return
 	}
 	if dataFile == "" {
-		dataFile = "~/.local/share/spwd/data.dat"
+		if runtime.GOOS == "windows" {
+			dataFile = os.Getenv("USERPROFILE") + "\\.local\\share\\spwd\\data.dat"
+		} else {
+			dataFile = "~/.local/share/spwd/data.dat"
+		}
 	}
 	if filteringCommand, err = scanText("filteringCommand: "); err != nil {
 		return

@@ -41,6 +41,13 @@ func TestSaveConfig(t *testing.T) {
 	}
 }
 
+func TestConfigTemp(t *testing.T) {
+	err := configTemp()
+	if err != nil {
+		t.Error(err)
+	}
+}
+
 func setupTestConfig() (func(), error) {
 	td, err := ioutil.TempDir("", "")
 	if err != nil {
