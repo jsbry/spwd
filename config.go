@@ -21,7 +21,7 @@ type Config struct {
 	// FilteringCommand is command for filtering in search subcommand.
 	FilteringCommand string `yaml:"filtering_command"`
 	// UnprotectiveCommands are commands that are not protected with master password.
-	UnprotectiveCommands []string `yaml:"unprotective_commands"`
+	UnprotectiveCommands []string `yaml:"unprotective_commands,flow"`
 }
 
 // GetConfig return merged configuration.

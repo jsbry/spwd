@@ -39,6 +39,38 @@ func TestSaveConfig(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
+	if _, err = os.Stat(path); err != nil {
+		t.Error(err)
+	}
+	p, err := ioutil.ReadFile(path)
+	if err != nil {
+		t.Error(err)
+	}
+	var cfg Config
+	if err = yaml.Unmarshal(p, &cfg); err != nil {
+		t.Error(err)
+	}
+
+	if cfg.KeyFile != filepath.Join("testdata", "key_file") {
+		t.Errorf("KeyFileu Unmarshal failure: %#v", cfg.KeyFile)
+	}
+	if cfg.DataFile != filepath.Join("testdata", "data.dat") {
+		t.Errorf("DataFile Unmarshal failure: %#v", cfg.DataFile)
+	}
+	if cfg.FilteringCommand != "peco" {
+		t.Errorf("FilteringCommand Unmarshal failure: %#v", cfg.FilteringCommand)
+	}
+	if len(cfg.UnprotectiveCommands) != 2 {
+		t.Errorf("UnprotectiveCommands Unmarshal failure: %#v", len(cfg.UnprotectiveCommands))
+		return
+	}
+	if cfg.UnprotectiveCommands[0] != "new" {
+		t.Errorf("UnprotectiveCommands Unmarshal failure: %#v", cfg.UnprotectiveCommands)
+	}
+	if cfg.UnprotectiveCommands[1] != "copy" {
+		t.Errorf("UnprotectiveCommands Unmarshal failure: %#v", cfg.UnprotectiveCommands)
+	}
 }
 
 func TestConfigTemp(t *testing.T) {
