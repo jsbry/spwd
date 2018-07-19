@@ -1,4 +1,4 @@
-key_file: testdata\key_file
-data_file: testdata\data.dat
+key_file: testdata/key_file
+data_file: testdata/data.dat
 filtering_command: peco
 unprotective_commands: [new, copy]
